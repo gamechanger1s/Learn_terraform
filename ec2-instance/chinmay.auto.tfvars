@@ -1,2 +1,0 @@
-a_key = "AKIATA7PPR7YM4NVXQJS"
-s_key = "fsFZ49lUeBrz+FTpX3gcE6VBJpICEu0AP8JmC7he"
