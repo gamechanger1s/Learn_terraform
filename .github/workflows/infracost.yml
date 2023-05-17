@@ -6,7 +6,7 @@ on:
      - opened
      - closed
   push:
-   branches: '*'
+   branches: 'main'
    tags:
     - '*'
        
