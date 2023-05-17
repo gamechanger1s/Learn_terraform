@@ -7,6 +7,9 @@ on:
      - closed
   push:
    branches: '*'
+   tags:
+    - '*'
+       
 env:
   # If you use private modules you'll need this env variable to use
   # the same ssh-agent socket value across all jobs & steps.
