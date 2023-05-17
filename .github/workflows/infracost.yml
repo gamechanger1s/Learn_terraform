@@ -83,6 +83,7 @@ jobs:
       - name: Post Infracost comment
         run: |
             infracost comment github --path=/tmp/infracost.json \
+                                     --pull-request 3 --path /tmp/infracost.json --github-token $GITHUB_TOKEN \
                                      --repo=$GITHUB_REPOSITORY \
                                      --github-token=${{github.token}} \
                                      --pull-request=${{github.event.pull_request.number}} \
