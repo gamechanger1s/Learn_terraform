@@ -65,12 +65,14 @@ jobs:
       - name: Checkout PR branch
         uses: actions/checkout@v3
 
-      # Generate an Infracost diff and save it to a JSON file.
+     # Generate an Infracost diff and save it to a JSON file.
       - name: Post Infracost comment
         run: |
-         infracost comment github --path=/tmp/infracost.json \
-                                 --pull-request 3 --path /tmp/infracost.json --github-token $GITHUB_TOKEN \
-                                 --repo=<span class="math-inline">GITHUB\_REPOSITORY
+          infracost comment github --path=/tmp/infracost.json \
+                                 --pull-request ${{ github.event.pull_request.number }} \
+                                 --github-token ${{ secrets.GITHUB_TOKEN }} \
+                                 --repo=${{ github.repository }}
+
 
       #- name: Generate Infracost diff
       #  run: |
