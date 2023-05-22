@@ -6,7 +6,7 @@ on:
       - closed
       - edited
   push:
-    branches: ['*']
+    branches: ['main']
 
 jobs:
   cleanup:
@@ -40,4 +40,4 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
             -H "Content-Type: application/json" \
             -d '{"body": "Terraform Cleaner Output:\n\n'"${{ steps.terraform-cleaner.outputs['cleaner-output'] }}"'"}' \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.pr-number.outputs.pr-number }}/comments"
+            "https://api.github.com/repos/${{ github.repository }}/issues/13"
