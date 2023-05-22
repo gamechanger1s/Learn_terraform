@@ -50,7 +50,7 @@ jobs:
         run: cat tfsec_error.txt
 
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: tfsec_output.txt
 
