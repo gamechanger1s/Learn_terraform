@@ -1,0 +1,59 @@
+name: tfsec
+on:
+  workflow_dispatch:
+  push:
+    branches: '*'
+
+jobs:
+  tfsec:
+    name: tfsec sarif report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+
+      - name: Install tfsec
+        run: |
+          curl -L -o tfsec https://github.com/tfsec/tfsec/releases/latest/download/tfsec-linux-amd64
+          chmod +x tfsec
+          sudo mv tfsec /usr/local/bin/
+
+      - name: Find Terraform directories
+        id: find-terraform
+        run: |
+          find . -type f -name "*.tf" -exec dirname {} + > terraform_dirs.txt
+          cat terraform_dirs.txt
+
+      - name: Run tfsec on Terraform directories
+        run: |
+          while IFS= read -r dir; do
+            echo "Running tfsec on directory: $dir"
+            tfsec "$dir" >> tfsec_output.txt 2> tfsec_error.txt || true
+          done < terraform_dirs.txt
+
+      - name: Debug
+        run: |
+          pwd
+          ls -a
+
+      - name: Check tfsec version
+        run: tfsec --version
+
+      - name: Print tfsec output
+        run: cat tfsec_output.txt
+
+      - name: Print tfsec error
+        run: cat tfsec_error.txt
+
+      - name: Upload Text File
+        uses: actions/upload-artifact@v2
+        with:
+          name: tfsec_output
+          path: tfsec_output.txt
+
+      - name: PR Commenter
+        uses: tfsec/tfsec-pr-commenter-action@main
+        with:
+          github_token: ${{ secrets.CHECK_TOKEN }}
+          pull_request: ${{ github.event.pull_request.number }}
