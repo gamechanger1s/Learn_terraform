@@ -34,8 +34,8 @@ jobs:
           script: |
             const output = `Terraform Cleaner Output:\n\n${{ steps.terraform-cleaner.outputs['cleaner-output'] }}`;
             const { context } = github;
-            const { owner, repo } = context.repo;
-            const { number } = context.issue;
+            const { owner, repo } = prContext.repo;
+            const { number } = prContext.issue;
 
             github.issues.createComment({
               owner,
