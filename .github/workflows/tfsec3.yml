@@ -1,8 +1,6 @@
 name: tfsec3
 on:
-  push:
-    branches: ['*']
-  pull_request:
+ pull_request:
 jobs:
   tfsec:
     name: tfsec sarif report
