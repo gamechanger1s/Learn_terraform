@@ -4,8 +4,8 @@ on:
   pull_request:
     types:
       - opened
-  push:
-   branches: ['*']
+  push: 
+    branches: ['*']
 
 jobs:
   cleanup:
@@ -27,16 +27,16 @@ jobs:
           cleaner_output=$(terraform-cleaner 2>&1)
           echo "::set-output name=cleaner-output::\n\n$cleaner_output"
 
-      - name: Get PR Number
-        id: pr-number
-        run: |
-          echo "::set-output name=pr-number::$(jq --raw-output .pull_request.number $GITHUB_EVENT_PATH)"
-
       - name: Comment on PR
-        run: |
-          comment_body=$(echo -e "Terraform Cleaner Output:\n\n${{ steps.terraform-cleaner.outputs['cleaner-output'] }}")
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"body\": \"$comment_body\"}" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.pr-number.outputs.pr-number }}/comments"
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const body = `Terraform Cleaner Output:\n\n${{ steps.terraform-cleaner.outputs['cleaner-output'] }}`;
+            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+            await octokit.rest.issues.createComment({
+              issue_number: 13,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
