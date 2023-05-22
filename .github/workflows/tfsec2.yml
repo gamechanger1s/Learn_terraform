@@ -1,8 +1,11 @@
-name: tfsec
+name: tfsec2
 on:
   workflow_dispatch:
   push:
     branches: '*'
+  pull_request:
+    types:
+      - opened
 
 jobs:
   tfsec:
