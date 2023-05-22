@@ -42,7 +42,7 @@ jobs:
       - name: Check tfsec version
         run: tfsec --version
       - name: Change to Terraform directory
-        run: cd /root/Learn_terraform
+        run: cd Learn_terraform
 
       - name: Run tfsec
         run: tfsec . --format=sarif > tfsec.sarif
