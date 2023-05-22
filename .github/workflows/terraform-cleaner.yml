@@ -22,7 +22,6 @@ jobs:
         id: terraform-cleaner
         run: |
           mv terraform-cleaner /usr/local/bin 
-          terraform-cleaner
           cleaner_output=$(terraform-cleaner 2>&1)
           echo "::set-output name=cleaner-output::$cleaner_output"
 
@@ -36,5 +35,5 @@ jobs:
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{"body": "Terraform Cleaner Output:\n\n'"${{ steps.terraform-cleaner.outputs['cleaner-output'] }}'"}' \
+            -d '{"body": "Terraform Cleaner Output:\n\n'"${{ steps.terraform-cleaner.outputs['cleaner-output'] }}"'"}' \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.pr-number.outputs.pr-number }}/comments"
