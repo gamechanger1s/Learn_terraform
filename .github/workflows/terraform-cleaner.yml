@@ -33,15 +33,10 @@ jobs:
           echo "::set-output name=pr-number::$(jq --raw-output .pull_request.number $GITHUB_EVENT_PATH)"
 
       - name: Comment on PR
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.TOKEN }}
-          script: |
-            const output = `\`\`\`plaintext\nTerraform Cleaner Output:\n\n${{ steps.terraform-cleaner.outputs['cleaner-output'] }}\n\`\`\``;
-            const commentPayload = {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: ${{ steps.pr-number.outputs.pr-number }},
-              body: output
-            };
-            github.issues.createComment(commentPayload);
+        run: |
+          comment_body=$(echo -e "Terraform Cleaner Output:\n\n${{ steps.terraform-cleaner.outputs['cleaner-output'] }}")
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"body\": \"$comment_body\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.pr-number.outputs.pr-number }}/comments"
