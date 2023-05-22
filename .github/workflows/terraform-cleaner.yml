@@ -1,4 +1,7 @@
 name: Terraform Cleanup
+on:
+ push:
+  branches: ['*']
 
 
 
@@ -19,6 +22,7 @@ jobs:
         id: terraform-cleaner
         run: |
           mv terraform-cleaner /usr/local/bin 
+          terraform-cleaner
           cleaner_output=$(terraform-cleaner 2>&1)
           echo "::set-output name=cleaner-output::$cleaner_output"
 
