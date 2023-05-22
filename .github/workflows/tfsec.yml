@@ -4,8 +4,13 @@ on:
     branches:
       - main
   pull_request:
-  env:
+    types:
+      - opened
+      - synchronize
+
+env:
   PULL_REQUEST_NUMBER: 1
+
 jobs:
   tfsec:
     name: tfsec sarif report
@@ -13,27 +18,36 @@ jobs:
 
     steps:
       - name: Clone repo
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
 
-      - name: tfsec
-        uses: tfsec/tfsec-sarif-action@main
-        with:
-          sarif_file: tfsec.sarif         
+      - name: Set pull request number
+        run: echo "PULL_REQUEST_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+      - name: Run tfsec
+        run: tfsec ./Learn_terrraform
+
+      - name: Generate SARIF file
+        run: tfsec --format=sarif ./Learn_terrraform > tfsec.sarif
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v1
         with:
-          # Path to SARIF file relative to the root of the repository
-          sarif_file: tfsec.sarif    
-          
-      - name: tfsec
-        uses: tfsec/tfsec-sarif-action@v0.0.3
+          sarif_file: tfsec.sarif
+
+      - name: Comment on pull request
+        uses: actions/github-script@v4
         with:
-         working_directory: Learn_terrraform/
-         sarif_file: tfsec.sarif         
-         github_token: ${{ secrets.Token }}
-         
-      - name: tfsec-pr-commenter
-        uses: tfsec/tfsec-pr-commenter-action@main
-         with:
-          github_token: ${{ secrets.Token }}   
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const sarifContent = fs.readFileSync('tfsec.sarif', 'utf8');
+            const context = github.context;
+            const repo = context.payload.repository;
+            const pullRequestNumber = context.payload.pull_request.number;
+            const comment = `#### tfsec Report for Pull Request ${pullRequestNumber}\n\n\`\`\`\n${sarifContent}\n\`\`\``;
+            github.issues.createComment({
+              owner: repo.owner.login,
+              repo: repo.name,
+              issue_number: pullRequestNumber,
+              body: comment,
+            });
