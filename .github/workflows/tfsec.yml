@@ -22,11 +22,21 @@ jobs:
           chmod +x tfsec
           sudo mv tfsec /usr/local/bin/
 
-      - name: Run tfsec
-        run: tfsec ./Learn_terraform
+      - name: Find Terraform directories
+        id: find-terraform
+        run: |
+          find . -type f -name "*.tf" -exec dirname {} + > terraform_dirs.txt
+          cat terraform_dirs.txt
+
+      - name: Run tfsec on Terraform directories
+        run: |
+          while IFS= read -r dir; do
+            echo "Running tfsec on directory: $dir"
+            tfsec "$dir"
+          done < terraform_dirs.txt
 
       - name: Generate SARIF file
-        run: tfsec ./Learn_terraform --format=sarif > tfsec.sarif
+        run: tfsec . --format=sarif > tfsec.sarif
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v1
@@ -36,4 +46,4 @@ jobs:
       - name: PR Commenter
         uses: tfsec/tfsec-pr-commenter-action@main
         with:
-          github_token: ${{ secrets.Token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
