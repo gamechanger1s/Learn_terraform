@@ -1,9 +1,6 @@
 name: Terraform Cleanup
 
-on:
-  pull_request:
-    types:
-      - opened
+
 
 jobs:
   cleanup:
