@@ -53,9 +53,10 @@ jobs:
         run: cat tfsec_error.txt
 
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v2.3.3
         with:
-          sarif_file: tfsec_output.txt
+         sarif_file: /home/runner/work/Learn_terraform/Learn_terraform/tfsec_output.txt
+
 
       - name: PR Commenter
         uses: tfsec/tfsec-pr-commenter-action@main
