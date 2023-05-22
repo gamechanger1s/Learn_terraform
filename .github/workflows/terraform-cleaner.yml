@@ -1,7 +1,9 @@
 name: Terraform Cleanup
 on:
- push:
-  branches: ['*']
+ pull_request:
+  types:
+   - opened
+   
 
 
 
