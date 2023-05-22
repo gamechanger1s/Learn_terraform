@@ -41,8 +41,7 @@ jobs:
            ls -a
       - name: Check tfsec version
         run: tfsec --version
-      - name: Change to Terraform directory
-        run: cd Learn_terraform/Learn_terraform
+
 
       - name: Run tfsec
         run: tfsec . --format=sarif > tfsec.sarif
