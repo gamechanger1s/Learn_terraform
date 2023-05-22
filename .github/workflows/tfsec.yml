@@ -1,9 +1,7 @@
 name: tfsec
 on:
  workflow_dispatch:
- pull_request:
-  types: 
-   - opened 
+
     
 
  
