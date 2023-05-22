@@ -35,8 +35,17 @@ jobs:
             tfsec "$dir" || true
           done < terraform_dirs.txt
 
-      - name: Generate SARIF file
-        run: tfsec /root/Learn_terraform --format=sarif > tfsec.sarif
+      - name: Debug
+        run: |
+          pwd
+           ls -a
+      - name: Check tfsec version
+        run: tfsec --version
+      - name: Change to Terraform directory
+        run: cd /root/Learn_terraform
+
+      - name: Run tfsec
+        run: tfsec . --format=sarif > tfsec.sarif
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v1
