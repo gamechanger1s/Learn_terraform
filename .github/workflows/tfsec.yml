@@ -64,5 +64,5 @@ jobs:
       - name: PR Commenter
         uses: tfsec/tfsec-pr-commenter-action@main
         with:
-          github_token: ${{ secrets.Token }}
+          github_token: ${{ secrets.CHECK_TOKEN}}
           pull_request: ${{ github.event.pull_request.number }}
