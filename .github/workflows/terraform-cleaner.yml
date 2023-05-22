@@ -1,11 +1,11 @@
 name: Terraform Cleanup
+
 on:
- pull_request:
-  types:
-   - opened
-   
-
-
+  pull_request:
+    types:
+      - opened
+  push:
+   branches: ['*']
 
 jobs:
   cleanup:
@@ -24,9 +24,8 @@ jobs:
         id: terraform-cleaner
         run: |
           mv terraform-cleaner /usr/local/bin 
-          terraform-cleaner
           cleaner_output=$(terraform-cleaner 2>&1)
-          echo "::set-output name=cleaner-output::$cleaner_output"
+          echo "::set-output name=cleaner-output::\n\n$cleaner_output"
 
       - name: Get PR Number
         id: pr-number
@@ -34,9 +33,15 @@ jobs:
           echo "::set-output name=pr-number::$(jq --raw-output .pull_request.number $GITHUB_EVENT_PATH)"
 
       - name: Comment on PR
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"body": "Terraform Cleaner Output:\n\n'"${{ steps.terraform-cleaner.outputs['cleaner-output'] }}"'"}' \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.pr-number.outputs.pr-number }}/comments"
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const output = `\`\`\`plaintext\nTerraform Cleaner Output:\n\n${{ steps.terraform-cleaner.outputs['cleaner-output'] }}\n\`\`\``;
+            const commentPayload = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.pr-number.outputs.pr-number }},
+              body: output
+            };
+            github.issues.createComment(commentPayload);
