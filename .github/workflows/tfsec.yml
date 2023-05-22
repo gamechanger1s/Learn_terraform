@@ -4,9 +4,6 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
-
 jobs:
   tfsec:
     name: tfsec sarif report
@@ -14,36 +11,27 @@ jobs:
 
     steps:
       - name: Clone repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
 
-      - name: Install tfsec
-        run: |
-          curl -L -o tfsec https://github.com/tfsec/tfsec/releases/latest/download/tfsec-linux-amd64
-          chmod +x tfsec
-          sudo mv tfsec /usr/local/bin/
-
-      - name: Find Terraform directories
-        id: find-terraform
-        run: |
-          find . -type f -name "*.tf" -exec dirname {} + > terraform_dirs.txt
-          cat terraform_dirs.txt
-
-      - name: Run tfsec on Terraform directories
-        run: |
-          while IFS= read -r dir; do
-            echo "Running tfsec on directory: $dir"
-            tfsec "$dir"
-          done < terraform_dirs.txt
-
-      - name: Generate SARIF file
-        run: tfsec . --format=sarif > tfsec.sarif
+      - name: tfsec
+        uses: tfsec/tfsec-sarif-action@main
+        with:
+          sarif_file: tfsec.sarif         
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v1
         with:
-          sarif_file: tfsec.sarif
-
-      - name: PR Commenter
-        uses: tfsec/tfsec-pr-commenter-action@main
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: tfsec.sarif    
+          
+      - name: tfsec
+        uses: tfsec/tfsec-sarif-action@v0.0.3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+         working_directory: Learn_terrraform/
+         sarif_file: tfsec.sarif         
+         github_token: ${{ secrets.Token }}
+         
+      - name: tfsec-pr-commenter
+        uses: tfsec/tfsec-pr-commenter-action@main
+         with:
+          github_token: ${{ secrets.Token }}   
