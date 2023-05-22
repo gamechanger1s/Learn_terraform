@@ -10,6 +10,8 @@ jobs:
   tfsec:
     name: tfsec sarif report
     runs-on: ubuntu-latest
+    
+    permissions: write
 
     steps:
       - name: Clone repo
