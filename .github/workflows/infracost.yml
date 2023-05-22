@@ -2,8 +2,7 @@
 # describe other options for 'on', 'pull_request' is a good default.
 on: 
  workflow_dispatch:
- push:
-  branches: '*'
+
  pull_request: 
      types:
        - opened
