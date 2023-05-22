@@ -32,7 +32,7 @@ jobs:
         run: |
           while IFS= read -r dir; do
             echo "Running tfsec on directory: $dir"
-            tfsec "$dir" || true
+            tfsec "$dir" > tfsec_output.txt 2> tfsec_error.txt || true
           done < terraform_dirs.txt
 
       - name: Debug
@@ -43,17 +43,16 @@ jobs:
       - name: Check tfsec version
         run: tfsec --version
 
-      - name: Run tfsec
-        run: |
-          tfsec . --format=sarif > tfsec.sarif 2> tfsec_error.log
+      - name: Print tfsec output
+        run: cat tfsec_output.txt
 
-      - name: Print SARIF file
-        run: cat tfsec.sarif
+      - name: Print tfsec error
+        run: cat tfsec_error.txt
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v1
         with:
-          sarif_file: tfsec.sarif
+          sarif_file: tfsec_output.txt
 
       - name: PR Commenter
         uses: tfsec/tfsec-pr-commenter-action@main
