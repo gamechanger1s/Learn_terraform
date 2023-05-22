@@ -1,5 +1,7 @@
 name: tfsec
 on:
+ push:
+  branches: '*'
 
  
 
