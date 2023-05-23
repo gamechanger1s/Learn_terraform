@@ -5,7 +5,7 @@ on:
       - opened
   push:
     branches: ['*'] 
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,5 +19,16 @@ jobs:
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
-          framework: terraform 
+          framework: terraform
+      - name: Post Checkov scan results to PR comments
+        if: always()
+        run: |
+          # Read the Checkov scan results from the output file
+          checkov_results=$(cat ${{ steps.checkov.outputs.checkovOutput }})
 
+          # Create a comment on the pull request using the GitHub API
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d "{\"body\": \"\`\`\`sarif\n$checkov_results\n\`\`\`\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
