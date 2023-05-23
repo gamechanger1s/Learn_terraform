@@ -28,7 +28,7 @@ jobs:
 
           # Create a comment on the pull request using the GitHub API
           curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             -d "{\"body\": \"\`\`\`sarif\n$checkov_results\n\`\`\`\"}" \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
