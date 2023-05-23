@@ -1,8 +1,10 @@
-name: Checkov main branch
+name: Checkov 
 on:
+ workflow_dispatch:
  pull_request:
    types: 
      - opened
+     - closed
  push:
    branches: ['*']
   
